@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALLiN Bets</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="header">Invalid request</h1>
+        <div id="game" hidden>
+            <h1 id="gameLabel"></h1>
+            <h3>Choose valid number</h3>
+            <input type="range" id="slider" class="slider" min="0" max="9999" value="0" oninput="updateValue(this.value)">
+            <p>Value: <span id="sliderValue">0</span></p>
+            <button class="button" onclick="submitValue()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const routes = {
+            '#/classic-dice': 'Clasic Dice',
+            '#/hash-dice': 'Hash Dice',
+        };
+
+        function router() {
+            const query = window.location.hash || '';
+            const identifiers= query.split("?");
+            if (!identifiers){
+                return
+            }
+            let path = identifiers[0]
+            const content = routes[path];
+            if (content) {
+                let header = document.getElementById('header');
+                if (header){
+                    header.remove()
+                }
+                document.getElementById('game').hidden = false;
+                document.getElementById('gameLabel').innerText = content;
+            }
+        }
+
+        window.addEventListener('hashchange', router);
+        window.addEventListener('load', router);
+
+        function updateValue(value) {
+            document.getElementById('sliderValue').textContent = value;
+        }
+
+        function submitValue() {
+            const gameLabel = document.getElementById('gameLabel').innerText;
+            const value = document.getElementById('slider').value;
+            const data = {
+                game: gameLabel, 
+                value: value
+            }
+            const dataString = JSON.stringify(data);
+            window.Telegram.WebApp.sendData(dataString);
+        }
+    </script>
+</body>
+</html>
